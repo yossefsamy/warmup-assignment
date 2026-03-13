@@ -238,14 +238,21 @@ function getTotalActiveHoursPerMonth(textFile, driverID, month) {
     let totalSeconds = 0;
 
     for (let line of lines) {
-        const parts = line.split(",");
 
+        if (!line.trim()) continue;  // skip empty lines
+    
+        const parts = line.split(",");
+    
+        if (parts.length < 8) continue;  // skip broken rows
+    
         const currentDriverID = parts[0];
         const date = parts[2];
         const activeTime = parts[7];
-
+    
+        if (!date) continue;
+    
         const monthInFile = String(Number(date.split("-")[1]));
-
+    
         if (currentDriverID === driverID && monthInFile === String(Number(month))) {
             totalSeconds += durationToSeconds(activeTime);
         }
@@ -269,7 +276,11 @@ function getRequiredHoursPerMonth(textFile, rateFile, bonusCount, driverID, mont
     let dayOff = "";
 
     for (let line of rateLines) {
+        if (!line.trim()) continue;
+
         const parts = line.split(",");
+        if (parts.length < 2) continue;
+
         if (parts[0] === driverID) {
             dayOff = parts[1];
         }
@@ -281,10 +292,17 @@ function getRequiredHoursPerMonth(textFile, rateFile, bonusCount, driverID, mont
     let totalSeconds = 0;
 
     for (let line of lines) {
+
+        if (!line.trim()) continue;
+
         const parts = line.split(",");
+
+        if (parts.length < 3) continue;
 
         const currentDriverID = parts[0];
         const date = parts[2];
+
+        if (!date) continue;
 
         const monthInFile = String(Number(date.split("-")[1]));
 
@@ -310,6 +328,7 @@ function getRequiredHoursPerMonth(textFile, rateFile, bonusCount, driverID, mont
 
     return secondsToTime(totalSeconds);
 }
+
 
 // ============================================================
 // Function 10: getNetPay(driverID, actualHours, requiredHours, rateFile)
